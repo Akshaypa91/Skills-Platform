@@ -89,8 +89,62 @@ const Navbar = () => {
                                 <UserButton afterSignOutUrl="/" />
                             </div>
                         )}
+
+                        {/* toggle */}
+                        <button
+                            onClick={() => setIsOpen(!isOpen)}
+                            className={navbarStyles.mobileMenuButton}
+                        >
+                            {isOpen ? <X size={20} /> : <Menu size={20} />}
+                        </button>
                     </div>
                 </div>
+
+                {/* mobile nav */}
+                <div ref={menuRef} className={`${navbarStyles.mobileMenu} ${isOpen ? navbarStyles.mobileMenuOpen : navbarStyles.mobileMenuClosed
+                    }`}>
+                    <div className={navbarStyles.mobileMenuContainer}>
+                        <div className={navbarStyles.mobileMenuItems}>
+                            {navItems.map((item) => {
+                                const Icon = item.icon;
+                                return (
+                                    <NavLink key={item.name} to={item.href} end={item.href === '/'}
+                                     className={({ isActive }) => mobileLinkClass(isActive)}
+                                     onClick={() => setIsOpen(false)}
+                                     >
+                                        <div className={navbarStyles.mobileMenuIconContainer}>
+                                            <Icon size={18} className={navbarStyles.mobileMenuIcon} />
+                                        </div>
+                                        <span className={navbarStyles.mobileMenuText}>
+                                            {item.name}
+                                        </span>
+                                    </NavLink>
+                                );
+                            })}
+
+                            {!isSignedIn ? (
+                                <button type="button" onClick={() => {
+                                    openSignUp({});
+                                    setIsOpen(false);
+                                }} className={
+                                    navbarStyles.mobileCreateAccountButton ??
+                                    navbarStyles.mobileLoginButton
+                                }
+                                >
+                                    <span>Create Account</span>
+                                </button>
+                            ) : (
+                                <div className=" px-4 py-2">
+                                    <UserButton afterSignOutUrl="/" />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className={navbarStyles.backgroundPattern}>
+                <div className={navbarStyles.pattern}></div>
             </div>
         </nav>
     );
