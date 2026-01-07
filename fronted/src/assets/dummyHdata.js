@@ -12,7 +12,7 @@ export const coursesData = [
   {
     id: 1,
     name: "React Masterclass",
-    teacher: "Sophia Miller",
+    teacher: "Unknown",
     image: HC1,
     rating: 4.8,
     isFree: false,
@@ -65,7 +65,7 @@ export const coursesData = [
   {
     id: 2,
     name: "Frontend Crash Course",
-    teacher: "Ethan Brown",
+    teacher: "Monster",
     image: HC2,
     rating: 4.7,
     isFree: true,
@@ -107,7 +107,7 @@ export const coursesData = [
   {
     id: 3,
     name: "Full Stack JavaScript",
-    teacher: "Noah Johnson",
+    teacher: "Code aur Chai",
     image: HC3,
     rating: 4.7,
     isFree: false,
@@ -150,7 +150,7 @@ export const coursesData = [
   {
     id: 4,
     name: "UX/UI Design Pro",
-    teacher: "Olivia Lee",
+    teacher: "Monster-ak",
     image: HC4,
     rating: 4.9,
     isFree: false,
@@ -192,7 +192,7 @@ export const coursesData = [
   {
     id: 5,
     name: "Next.js Deep Dive",
-    teacher: "Liam Smith",
+    teacher: "ADP",
     image: HC5,
     rating: 4.6,
     isFree: true,
@@ -233,7 +233,7 @@ export const coursesData = [
   {
     id: 6,
     name: "Python for Data Science",
-    teacher: "Isabella Brown",
+    teacher: "Harry Bhai",
     image: HC6,
     rating: 4.5,
     isFree: true,
@@ -276,7 +276,7 @@ export const coursesData = [
   {
     id: 7,
     name: "Python for Data Science (Advance)",
-    teacher: "Isabella Brown",
+    teacher: "Harry Bhai",
     image: HC7,
     rating: 4.5,
     isFree: false,
@@ -319,7 +319,7 @@ export const coursesData = [
   {
     id: 8,
     name: " JavaScript (Alternate)",
-    teacher: "Noah Johnson",
+    teacher: "Code aur Chai",
     image: HC8,
     rating: 4.7,
     isFree: false,

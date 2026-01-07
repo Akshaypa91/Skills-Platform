@@ -132,7 +132,7 @@ const HomeCourses = () => {
                             <div
                                 key={course.id}
                                 onClick={() => homeCoursesStyles(course.id)}
-                                className={homeCoursesStyles.coursesGrid}
+                                className={homeCoursesStyles.courseCard}
                             >
                                 <div className={homeCoursesStyles.imageContainer}>
                                     <img src={course.image}
