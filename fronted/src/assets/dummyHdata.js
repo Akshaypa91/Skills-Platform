@@ -233,7 +233,7 @@ export const coursesData = [
   {
     id: 6,
     name: "Python for Data Science",
-    teacher: "Harry Bhai",
+    teacher: "Yuvraj Kale",
     image: HC6,
     rating: 4.5,
     isFree: true,
