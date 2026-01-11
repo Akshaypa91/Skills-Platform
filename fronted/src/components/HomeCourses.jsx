@@ -131,7 +131,7 @@ const HomeCourses = () => {
                         return (
                             <div
                                 key={course.id}
-                                onClick={() => homeCoursesStyles(course.id)}
+                                onClick={() => handleCourseClick(course.id)}
                                 className={homeCoursesStyles.courseCard}
                             >
                                 <div className={homeCoursesStyles.imageContainer}>
