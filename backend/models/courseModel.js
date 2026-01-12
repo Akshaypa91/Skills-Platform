@@ -11,7 +11,7 @@ const chapterSchema = new mongoose.Schema({
         minutes: { type: Number, default: 0 },
     },
     totalMinutes: { type: Number, default: 0 },
-    videoURL: {
+    videoUrl: {
         type: String,
         required: true
     },
@@ -36,7 +36,7 @@ const courseSchema = new mongoose.Schema(
         ratings: [
             {
                 userId: { type: String, required: true },
-                rating: { type: Number, required: true, min: 0, max: 5 },
+                rating: { type: Number, required: true, min: 1, max: 5 },
                 comment: { type: String, default: "" },
                 updatedAt: { type: Date, default: null },
             },
