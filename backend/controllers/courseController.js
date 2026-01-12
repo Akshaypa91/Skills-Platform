@@ -6,7 +6,7 @@ import path from 'path';
 // Helper Function
 const toNumber = (v, fallback = 0) => {
     if (typeof v === 'number') return v;
-    if (typeof c === 'string' && v.trim() === "") return fallback;
+    if (typeof v === 'string' && v.trim() === "") return fallback;
     const n = Number(v);
     return Number.isFinite(n) ? n : fallback;
 };
@@ -123,7 +123,7 @@ export const getPublicCourses = async (req, res) => {
                 image: imageURL
             }
         });
-        return req.json({
+        return res.json({
             success: true,
             items: mapped
         });
@@ -255,7 +255,7 @@ export const createCourse = async (req, res) => {
         const returned = course.toObject();
         returned.image = makeImageAbsolute(returned.image || "", req);
         return res.status(201).json({
-            course: true,
+            success: true,
             course: returned
         })
     }

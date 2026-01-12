@@ -18,7 +18,7 @@ const chapterSchema = new mongoose.Schema({
 }, { _id: true });
 
 // Leacture Schema
-const leactureSchema = new mongoose.Schema({
+const lectureSchema = new mongoose.Schema({
     title: { type: String, required: true },
     duration: {
         hours: { type: Number, default: 0 },
