@@ -2,7 +2,6 @@ import React from "react";
 import { footerStyles, footerBackgroundStyles, contactIconGradients, iconColors, footerCustomStyles } from '../assets/dummyStyles';
 import { socialIcons, quickLinks, supportLinks, contactInfo, } from '../assets/dummyFooter';
 import logo from '../assets/logo.png';
-import { Link } from "react-router-dom";
 import {
     Twitter,
     Instagram,
@@ -91,16 +90,16 @@ const Footer = () => {
                                 const Icon = iconMap[link.iconKey] || ArrowRight;
 
                                 return (
-                                    <li to={link.name}>
-                                        <Link
-                                            to={link.href}
+                                    <li key={link.name}>
+                                        <a href={link.href}
                                             className={`${footerStyles.linkItem} ${iconColors.cyan}`}
-                                            style={{ transitionDelay: `${index * 80}ms` }}
+                                            style={{
+                                                transitionDelay: `${index * 80}ms`,
+                                            }}
                                         >
                                             <Icon className={`${footerStyles.linkIcon} ${iconColors.cyan}`} />
                                             <span className="truncate">{link.name}</span>
-                                        </Link>
-
+                                        </a>
                                     </li>
                                 );
                             })}
