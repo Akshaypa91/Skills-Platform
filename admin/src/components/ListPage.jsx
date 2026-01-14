@@ -586,6 +586,23 @@ const ListPage = () => {
                 )}
               </div>
             ))}
+            {/* till is the UI */}
+
+            {!loading && filteredCourses.length === 0 && (
+              <div className={listStyles.emptyState}>
+                <Search className={listStyles.emptyIcon} />
+                <p className={listStyles.emptyText}>
+                  No courses found matching your search
+                </p>
+
+                <button
+                onClick={() => setSearchTerm("")}
+                className={listStyles.clearButton}
+                >
+                  Clear Search
+                </button>
+              </div>
+            )}
         </div>
       </div>
     </div>
