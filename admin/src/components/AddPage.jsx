@@ -1026,7 +1026,7 @@ const AddPage = () => {
                                     <div className={addPageStyles.durationGrid}>
                                         <div>
                                             <input type="number" name="duration.hours" value={currentLecture.duration.hours}
-                                                onChange={handleChapterChange} placeholder="Hours" min='0'
+                                                onChange={handleLectureChange} placeholder="Hours" min='0'
                                                 className={addPageStyles.input}
                                             />
                                             <span className={addPageStyles.durationHelper}>
@@ -1036,7 +1036,7 @@ const AddPage = () => {
 
                                         <div>
                                             <input type="number" name="duration.minutes" value={currentLecture.duration.minutes}
-                                                onChange={handleChapterChange} placeholder="Minutes" min='0' max="59"
+                                                onChange={handleLectureChange} placeholder="Minutes" min='0' max="59"
                                                 className={addPageStyles.input}
                                             />
                                             <span className={addPageStyles.durationHelper}>
@@ -1049,7 +1049,7 @@ const AddPage = () => {
                                 {currentLecture.chapters.length > 0 && (
                                     <div>
                                         <label className={addPageStyles.inputLabel}>
-                                            Chapters in this lecture: 
+                                            Chapters in this lecture:
                                         </label>
                                         <div className={addPageStyles.chaptersList}>
                                             {currentLecture.chapters.map((chapter) => (
@@ -1078,8 +1078,135 @@ const AddPage = () => {
                                     </button>
                                 </div>
                                 <div className=" flex gap-2 sm:gap-3 pt-2">
-                                    <button>
-                                        
+                                    <button type="button" onClick={addLecture}
+                                        className={`${addPageStyles.modalButton} 
+                                    ${addPageStyles.modalButtonPrimary}`}
+                                    >
+                                        Add Lecture
+                                    </button>
+
+                                    <button type="button"
+                                        onClick={() => setShowLectureForm(false)}
+                                        className={`${addPageStyles.modalButton} 
+                                    ${addPageStyles.modalButtonSecondary}`}
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Chapter Modal */}
+                {showChapterForm && (
+                    <div className={addPageStyles.modalOverlay}>
+                        <div className={addPageStyles.modal}>
+                            <div className={addPageStyles.modalHeader}>
+                                <div
+                                    className={addPageStyles.modalIconContainer("bg-green-100")}
+                                >
+                                    <Plus className="text-green-600" size={20} />
+                                </div>
+                                <h3 className={addPageStyles.modalTitle}>
+                                    {selectedLectureIndex !== null
+                                        ? "Add Chapter to Lecture"
+                                        : "Add Chapter to Current Lecture"}
+                                </h3>
+                            </div>
+                            <div className={addPageStyles.modalContent}>
+                                <div>
+                                    <label className={addPageStyles.inputLabel}>
+                                        Chapter Name *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        value={currentChapter.name}
+                                        onChange={handleChapterChange}
+                                        placeholder="e.g., Course Introduction"
+                                        className={addPageStyles.textarea}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className={addPageStyles.inputLabel}>Topic *</label>
+                                    <input
+                                        type="text"
+                                        name="topic"
+                                        value={currentChapter.topic}
+                                        onChange={handleChapterChange}
+                                        placeholder="e.g., What we'll build"
+                                        className={addPageStyles.textarea}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className={addPageStyles.inputLabel}>Duration *</label>
+                                    <div className={addPageStyles.durationGrid}>
+                                        <div>
+                                            <input
+                                                type="number"
+                                                name="duration.hours"
+                                                value={currentChapter.duration.hours}
+                                                onChange={handleChapterChange}
+                                                placeholder="Hours"
+                                                min="0"
+                                                className={addPageStyles.textarea}
+                                            />
+                                            <span className={addPageStyles.durationHelper}>
+                                                Hours
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <input
+                                                type="number"
+                                                name="duration.minutes"
+                                                value={currentChapter.duration.minutes}
+                                                onChange={handleChapterChange}
+                                                placeholder="Minutes"
+                                                min="0"
+                                                max="59"
+                                                className={addPageStyles.textarea}
+                                            />
+                                            <span className={addPageStyles.durationHelper}>
+                                                Minutes
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className={addPageStyles.inputLabel}>
+                                        Video URL *
+                                    </label>
+                                    <input
+                                        type="url"
+                                        name="videoUrl"
+                                        value={currentChapter.videoUrl}
+                                        onChange={handleChapterChange}
+                                        placeholder="https://youtube.com/watch?v=..."
+                                        className={addPageStyles.textarea}
+                                    />
+                                </div>
+
+                                <div className={addPageStyles.modalActions}>
+                                    <button
+                                        type="button"
+                                        onClick={addChapter}
+                                        className={`${addPageStyles.modalButtonCompact} ${addPageStyles.modalButtonCompactPrimary}`}
+                                    >
+                                        Add Chapter
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setShowChapterForm(false);
+                                            setSelectedLectureIndex(null);
+                                        }}
+                                        className={`${addPageStyles.modalButtonCompact} ${addPageStyles.modalButtonCompactSecondary}`}
+                                    >
+                                        Cancel
                                     </button>
                                 </div>
                             </div>
