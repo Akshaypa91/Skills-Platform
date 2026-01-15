@@ -9,6 +9,7 @@ import { ArrowUp } from "lucide-react";
 import CourseDetailPageHome from "./pages/CourseDetailPageHome";
 import CourseDetailPage from "./pages/CourseDetailPage";
 import MyCoursePage from "./pages/MyCoursePage";
+import VerifyPaymentPage from "../VerifyPaymentPage";
 
 
 // to protect the route
@@ -91,7 +92,8 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-
+        <Route path="/booking/success" element={<VerifyPaymentPage />} />
+        <Route path="/booking/cancel" element={<VerifyPaymentPage />} />
       </Routes>
 
       <ScrollTopButton threshold={250} />
