@@ -1,16 +1,24 @@
 import React from "react";
 import { homeCoursesStyles } from '../assets/dummyStyles';
-import { coursesData } from '../assets/dummyHdata';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Star, User } from 'lucide-react';
 import { Slide, toast, ToastContainer } from 'react-toastify';
 import { useState, useEffect } from "react";
+import { useUser, useAuth } from '@clerk/clerk-react';
+
+const API_BASE = 'http://localhost:4000';
 
 const HomeCourses = () => {
 
     const navigate = useNavigate();
     const { title, course: courseFont, detail } = homeCoursesStyles.fonts;
-    const visibleCourses = coursesData.slice(0, 8);
+    const [courses, setCourses] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // Clerk
+    const { isSignedIn, user } = useUser(); //user is null if not signed in.
+    const { getToken } = useAuth();
 
     const [userRatings, setUserRatings] = useState(() => {
         try {
@@ -28,14 +36,68 @@ const HomeCourses = () => {
         } catch { }
     }, [userRatings]);
 
-    const showLoginToast = () => {
-        toast.error("Please login to access this course", {
-            position: "top-right",
-            transition: Slide,
-            autoClose: 3000,
-            theme: "dark",
-        });
-    };
+    // fetch
+    useEffect(() => {
+        let mounted = true;
+        setLoading(true);
+        setError(null);
+
+        fetch(`${API_BASE}/api/course/public?home=true&limit=8`).then(
+            async (res) => {
+                if (!res.ok) {
+                    const text = await res.text();
+                    throw new Error(text || "Failed to fetch courses from server");
+                }
+                return res.json();
+            }
+        )
+            .then((json) => {
+                if (!mounted) return;
+                const items = (json && (json.items || json.courses || [])) || [];
+                const mapped = items.map((c) => ({
+                    id: c._id || c.id,
+                    name: c.name,
+                    teacher: c.teacher,
+                    image: c.image,
+                    price: c.price || {
+                        original: c.price?.original,
+                        sale: c.price?.sale,
+                    },
+                    isFree:
+                        c.pricingType === "free" ||
+                        !c.price ||
+                        (c.price && !c.price.sale && !c.price.original),
+                    // prefer avgRating / totalRatings from backend if available
+                    avgRating:
+                        typeof c.avgRating !== "undefined" ? c.avgRating : c.rating || 0,
+                    totalRatings:
+                        typeof c.totalRatings !== "undefined"
+                            ? c.totalRatings
+                            : c.ratingCount || 0,
+                    courseType: c.courseType || "regular",
+                }));
+                setCourses(mapped);
+            })
+            .catch((err) => {
+                console.error('Failed to load courses', err);
+                if (mounted) setError('Failed to load server');
+            })
+            .finally(() => mounted && setLoading(false));
+
+        return () => {
+            mounted = false;
+        };
+
+
+        const showLoginToast = () => {
+            toast.error("Please login to access this course", {
+                position: "top-right",
+                transition: Slide,
+                autoClose: 3000,
+                theme: "dark",
+            });
+        };
+    }, []);
 
     const handleCourseClick = (id) => {
         const token = localStorage.getItem("token")
@@ -62,30 +124,105 @@ const HomeCourses = () => {
         navigate('/courses');
     }
 
-    const handleSetRating = (e, courseId, rating) => {
-        e.stopPropagation();
-        setUserRatings((prev) => ({ ...prev, [courseId]: rating }));
+    const submitRatingToServer = async (courseId, ratingValue) => {
+        try {
+            const headers = { "Content-Type": "application/json" };
+            // try to get Clerk JWT token if available (works with Clerk)
+            try {
+                if (getToken) {
+                    const token = await getToken().catch(() => null);
+                    if (token) headers.Authorization = `Bearer ${token}`;
+                }
+            } catch (err) {
+                // ignore token errors and fall back to credentials include
+            }
+
+            const res = await fetch(`${API_BASE}/api/course/${courseId}/rate`, {
+                method: "POST",
+                headers,
+                credentials: "include",
+                body: JSON.stringify({ rating: ratingValue }),
+            });
+            const data = await res.json().catch(() => ({ success: false }));
+            if (!res.ok && !data.success) {
+                const msg =
+                    (data && (data.message || data.error)) ||
+                    `Failed to rate (${res.status})`;
+                throw new Error(msg);
+            }
+
+            // Expect server to return new avg & total (controller examples above do)
+            // Some servers return { success: true, avgRating, totalRatings }
+            const avg =
+                data.avgRating ??
+                data.course?.avgRating ??
+                data.course?.avgRating ??
+                data.course?.avgRating ??
+                data.course?.avgRating;
+            const total =
+                data.totalRatings ??
+                data.course?.ratingCount ??
+                data.course?.ratingCount ??
+                data.course?.ratingCount;
+
+            // update UI with returned aggregates (fallback to previous if missing)
+            setCourses((prev) =>
+                prev.map((c) =>
+                    c.id === courseId
+                        ? {
+                            ...c,
+                            avgRating: typeof avg === "number" ? avg : c.avgRating,
+                            totalRatings:
+                                typeof total === "number" ? total : c.totalRatings,
+                        }
+                        : c
+                )
+            );
+
+            // store user's rating locally so UI reflects selection
+            setUserRatings((prev) => ({ ...prev, [courseId]: ratingValue }));
+
+            toast.success("Thanks for your rating!");
+            return { success: true, avg, total };
+        } catch (err) {
+            console.error("submitRatingToServer:", err);
+            toast.error(err.message || "Failed to submit rating");
+            return { success: false, error: err };
+        }
     };
 
-    //Stars to select (5 stars)
+    // for handle to set by user and show avg rating given by all users.
+    const handleSetRating = async (e, courseId, rating) => {
+        e.stopPropagation();
+        if (!isSignedIn) {
+            toast('Please sign in to submit a rating...', { icon: "⭐" })
+            return;
+        }
+        setUserRatings((prev) => ({ ...prev, [courseId]: rating }));
+        await submitRatingToServer(courseId, rating);
+    };
+
     const renderInteractiveStars = (course) => {
+        // if signed in and user rated, show their rating; otherwise show rounded avg
         const userRating = userRatings[course.id] || 0;
         const hover = hoverRatings[course.id] || 0;
-        const displayRating = hover || userRating;
+        // when logged in prefer user's rating for filled stars, else show rounded avg
+        const baseDisplay = userRating || Math.round(course.avgRating || 0);
+        const displayRating = hover || baseDisplay;
 
         return (
-            <div className={homeCoursesStyles.starsContainer}>
-                <div
-                    className={homeCoursesStyles.interactiveStars}
-                    onClick={(e) => e.stopPropagation()}
-                >
+            <div
+                className={homeCoursesStyles.starsContainer}
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className={homeCoursesStyles.interactiveStars}>
                     {Array.from({ length: 5 }).map((_, i) => {
                         const idx = i + 1;
                         const filled = idx <= displayRating;
-
                         return (
                             <button
                                 key={i}
+                                aria-label={`Rate ${idx} star${idx > 1 ? "s" : ""}`}
                                 onClick={(e) => handleSetRating(e, course.id, idx)}
                                 onMouseEnter={() =>
                                     setHoverRatings((s) => ({ ...s, [course.id]: idx }))
@@ -109,6 +246,22 @@ const HomeCourses = () => {
                         );
                     })}
                 </div>
+
+                <div
+                    style={{
+                        marginLeft: 8,
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 6,
+                    }}
+                >
+                    <span style={{ fontWeight: 600 }}>
+                        {(course.avgRating || 0).toFixed(1)}
+                    </span>
+                    <span style={{ color: "#6b7280", fontSize: 12 }}>
+                        ({course.totalRatings || 0})
+                    </span>
+                </div>
             </div>
         );
     };
@@ -124,60 +277,72 @@ const HomeCourses = () => {
                     </h2>
                 </div>
 
-                <div className={homeCoursesStyles.coursesGrid}>
-                    {visibleCourses.map((course) => {
-                        const isFree = !!course.isFree || !course.price;
+                {loading ? (
+                    <div className="p-6 text-center">
+                        Loading courses...
+                    </div>
+                ) : error ? (
+                    <div className=" p-6 text-center text-red-500">{error}</div>
+                ) : (
+                    <>
+                        <div className={homeCoursesStyles.coursesGrid}>
+                            {courses.map((course) => {
+                                const isFree = !!course.isFree || !course.price;
 
-                        return (
-                            <div
-                                key={course.id}
-                                onClick={() => handleCourseClick(course.id)}
-                                className={homeCoursesStyles.courseCard}
-                            >
-                                <div className={homeCoursesStyles.imageContainer}>
-                                    <img src={course.image}
-                                        alt={course.name}
-                                        className={homeCoursesStyles.courseImage}
-                                        loading="lazy"
-                                    />
-                                </div>
+                                return (
+                                    <div
+                                        key={course.id}
+                                        onClick={() => handleCourseClick(course.id)}
+                                        className={homeCoursesStyles.courseCard}
+                                    >
+                                        <div className={homeCoursesStyles.imageContainer}>
+                                            <img src={course.image}
+                                                alt={course.name}
+                                                className={homeCoursesStyles.courseImage}
+                                                loading="lazy"
+                                            />
+                                        </div>
 
-                                <div className={homeCoursesStyles.courseInfo}>
-                                    <h3 className={`${courseFont} ${homeCoursesStyles.courseName}`}>
-                                        {course.name}
-                                    </h3>
+                                        <div className={homeCoursesStyles.courseInfo}>
+                                            <h3 className={`${courseFont} ${homeCoursesStyles.courseName}`}>
+                                                {course.name}
+                                            </h3>
 
-                                    <div className={`${detail} ${homeCoursesStyles.teacherInfo}`}>
-                                        <User size={15} className={homeCoursesStyles.teacherIcon} />
-                                        <span className={homeCoursesStyles.teacherName}>
-                                            {course.teacher}
-                                        </span>
-                                    </div>
-                                    <div className={homeCoursesStyles.ratingContainer}>
-                                        {renderInteractiveStars(course)}
-                                    </div>
-
-                                    <div className={homeCoursesStyles.pricingContainer}>
-                                        {isFree ? (
-                                            <span className={homeCoursesStyles.freePrice}>Free</span>
-                                        ) : (
-                                            <>
-                                                <span className={homeCoursesStyles.salePrice}>
-                                                    ₹{course.price?.sale ?? "-"}
+                                            <div className={`${detail} ${homeCoursesStyles.teacherInfo}`}>
+                                                <User size={15} className={homeCoursesStyles.teacherIcon} />
+                                                <span className={homeCoursesStyles.teacherName}>
+                                                    {course.teacher}
                                                 </span>
-                                                {course.price?.original && (
-                                                    <span className={homeCoursesStyles.originalPrice}>
-                                                        ₹{course.price.original}
-                                                    </span>
+                                            </div>
+                                            <div className={homeCoursesStyles.ratingContainer}>
+                                                {renderInteractiveStars(course)}
+                                            </div>
+
+                                            <div className={homeCoursesStyles.pricingContainer}>
+                                                {isFree ? (
+                                                    <span className={homeCoursesStyles.freePrice}>Free</span>
+                                                ) : (
+                                                    <>
+                                                        <span className={homeCoursesStyles.salePrice}>
+                                                            ₹{course.price?.sale ?? "-"}
+                                                        </span>
+                                                        {course.price?.original && (
+                                                            <span className={homeCoursesStyles.originalPrice}>
+                                                                ₹{course.price.original}
+                                                            </span>
+                                                        )}
+                                                    </>
                                                 )}
-                                            </>
-                                        )}
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
+                                );
+                            })}
+                        </div>
+                    </>
+                )}
+
+
 
                 {/* CTA btn */}
                 <div className={homeCoursesStyles.ctaContainer}>
@@ -216,7 +381,7 @@ const HomeCourses = () => {
                 position="top-right"
                 autoClose={3000}
                 theme="dark"
-                transition={Slide}    
+                transition={Slide}
             />
 
             <style jsx>{homeCoursesStyles.animations}</style>
