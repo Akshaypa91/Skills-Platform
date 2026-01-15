@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { bookingsStyles } from '../assets/dummyStyles';
 import { BadgeIndianRupee, BookOpen, BookSearch, GraduationCap, Search, User } from 'lucide-react';
 
-const API_BASE = 'http://localhost:4000';
+const API_BASE = 'https://skills-platform-1.onrender.com';
 
 const BookingsPage = () => {
 

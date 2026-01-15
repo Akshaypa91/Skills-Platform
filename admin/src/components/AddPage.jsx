@@ -3,7 +3,7 @@ import { addPageStyles } from '../assets/dummyStyles';
 import { useNavigate } from "react-router-dom";
 import { toast, Toaster } from "react-hot-toast";
 import { BadgeIndianRupee, BookOpenText, ChevronDown, ChevronUp, Clock, Image as ImageIcon, ListOrdered, PenLine, Plus, Star, Upload, UserPen, Video, X } from "lucide-react";
-const API_BASE = 'http://localhost:4000';
+const API_BASE = 'https://skills-platform-1.onrender.com';
 
 // formatDuration accepts either {hours, minutes} or (hours, minutes)
 const formatDuration = (a, b) => {

@@ -12,7 +12,7 @@ const ListPage = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const API_BASE = "http://localhost:4000";
+  const API_BASE = "https://skills-platform-1.onrender.com";
 
   // build image URL
   const getImageUrl = (imagePath) => {
