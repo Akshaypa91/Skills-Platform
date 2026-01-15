@@ -288,11 +288,15 @@ export const getUserBookings = async (req, res) => {
             message: 'Unauthorized'
         });
 
-        const bookings = (await Booking.find({ clerkUserId: userId })).sort({ createdAt: -1 }).lean();
+        const bookings = await Booking.find({ clerkUserId: userId })
+            .sort({ createdAt: -1 })
+            .lean();
+
         return res.json({
             success: true,
-            bookings
+            bookings,
         });
+
     }
     catch (err) {
         console.error("getUserBookings:", err);
