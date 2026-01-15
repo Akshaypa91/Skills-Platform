@@ -3,7 +3,7 @@ import { myCoursesStyles, myCoursesCustomStyles } from '../assets/dummyStyles';
 import { useUser, useAuth } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Star } from 'lucide-react';
+import { Play, Star, User } from 'lucide-react';
 const API_BASE = 'http://localhost:4000';
 
 
@@ -289,6 +289,7 @@ const MyCourses = () => {
     const handleSetRating = async (e, courseId, rating) => {
         e.stopPropagation();
         const { isSignedIn: signed } = { isSignedIn };
+        
         if (!signed) {
             toast('Please sign in to submit a rating', { icon: "⭐" });
             return;
@@ -438,12 +439,31 @@ const MyCourses = () => {
                                     <div className={myCoursesStyles.ratingContainer}>
                                         {renderInteractiveStars(course)}
                                     </div>
+
+                                    <div className={myCoursesStyles.teacherContainer}>
+                                        <User className={myCoursesStyles.teacherIcon} />
+                                        <span className={myCoursesStyles.teacherText}>
+                                            {course.teacher}
+                                        </span>
+                                    </div>
                                 </div>
+
+                                <button onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleViewCourse(course.id)
+                                }}
+                                className={myCoursesStyles.viewButton}
+                                >
+                                    <Play className={myCoursesStyles.buttonIcon} />
+                                    <span>View Course</span>
+                                </button>
                             </div>
                         </div>
                     ))}
                 </div>
             </div>
+
+            <style jsx>{myCoursesCustomStyles}</style>
         </div>
     );
 };
