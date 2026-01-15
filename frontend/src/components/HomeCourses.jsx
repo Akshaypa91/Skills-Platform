@@ -6,7 +6,7 @@ import { Slide, toast, ToastContainer } from 'react-toastify';
 import { useState, useEffect } from "react";
 import { useUser, useAuth } from '@clerk/clerk-react';
 
-const API_BASE = 'http://localhost:4000';
+const API_BASE = "https://skills-platform-1.onrender.com";
 
 const HomeCourses = () => {
 

@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { Slide, toast, ToastContainer } from "react-toastify";
 import { useUser, useAuth, Waitlist } from '@clerk/clerk-react';
 import { Toaster } from 'react-hot-toast';
-const API_BASE = 'http://localhost:4000';
+const API_BASE = "https://skills-platform-1.onrender.com";
 
 const StarIcon = ({ filled = false, half = false, className = "" }) => {
     if (half) {
