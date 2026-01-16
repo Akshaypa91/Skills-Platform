@@ -120,7 +120,7 @@ export const coursesData = [
         durationMin: 36,
         chapters: [
           { id: "3-1-1", name: "Node intro", topic: "Runtime & modules", durationMin: 12, videoUrl: "https://www.youtube.com/watch?v=TlB_eWDSMt4" },
-          { id: "3-1-2", name: "NPM & scripts", topic: "Packages, semver", durationMin: 10, videoUrl: "https://youtu.be/zysUIv0-xak?si=hMZHRMM78oBaQNIs" },
+          { id: "3-1-2", name: "NPM & scripts", topic: "Packages, server", durationMin: 10, videoUrl: "https://youtu.be/zysUIv0-xak?si=hMZHRMM78oBaQNIs" },
           { id: "3-1-3", name: "APIs with Express", topic: "Routes & middleware", durationMin: 14, videoUrl: "https://www.youtube.com/watch?v=W6NZfCO5SIk" }
         ]
       },
