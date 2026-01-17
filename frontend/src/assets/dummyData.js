@@ -69,7 +69,7 @@ const courses = [
     image: HC2,
     rating: 4.8,
     category: "Development",
-    price: null, // FREE COURSE
+    price: null,
     isFree: true,
     overview: "Complete web development course covering HTML, CSS, JavaScript, and modern deployment practices. Learn to build responsive, accessible websites and deploy them to production. Perfect for beginners starting their web development journey.",
     lectures: [
@@ -141,7 +141,7 @@ const courses = [
     image: HC4,
     rating: 4.7,
     category: "Design",
-    price: null, // FREE COURSE
+    price: null,
     isFree: true,
     overview: "Comprehensive UI/UX design course covering design principles, user research, wireframing, prototyping, and design systems. Learn industry-standard tools like Figma and build portfolio-ready design projects from concept to completion.",
     lectures: [
@@ -236,7 +236,7 @@ const courses = [
     image: HC7,
     rating: 4.9,
     category: "AI/ML",
-    price: null, // FREE COURSE
+    price: null,
     isFree: true,
     overview: "Comprehensive machine learning course covering supervised and unsupervised learning algorithms, model evaluation, and real-world applications. Build and deploy ML models using Python and scikit-learn for practical problem-solving.",
     lectures: [
