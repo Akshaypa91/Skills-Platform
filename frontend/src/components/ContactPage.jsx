@@ -42,7 +42,7 @@ const ContactPage = () => {
             `Subject: ${formData.subject}%0A` +
             `Message: ${formData.message}`;
 
-        const whatsappUrl = `https://wa.me/9405417454?text=${whatsappMessage}`;
+        const whatsappUrl = `https://wa.me/9112948063?text=${whatsappMessage}`;
         window.open(whatsappUrl, "_blank");
 
         setTimeout(() => {
