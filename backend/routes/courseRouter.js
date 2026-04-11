@@ -1,18 +1,10 @@
 import express from 'express';
 import multer from 'multer';
-import path from 'path';
 import { createCourse, deleteCourse, getCourseById, getCourses, getMyRating, getPublicCourses, rateCourse } from '../controllers/courseController.js';
 import { createClerkClient } from '@clerk/backend';
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, path.join(process.cwd(), 'uploads')),
-    filename: (req, file, cb) => {
-        const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
-        const ext = path.extname(file.originalname);
-        cb(null, `course-${unique}${ext}`);
-    },
-});
-const upload = multer({storage});
+// Use memory storage — file buffer is streamed directly to Cloudinary
+const upload = multer({ storage: multer.memoryStorage() });
 
 const courseRouter = express.Router();
 

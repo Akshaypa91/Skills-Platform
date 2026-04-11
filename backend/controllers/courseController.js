@@ -1,7 +1,7 @@
 import Course from "../models/courseModel.js";
 import { getAuth } from "@clerk/express";
-import fs from 'fs';
-import path from 'path';
+import cloudinary from "../config/cloudinary.js";
+import streamifier from "streamifier";
 
 // Helper Function
 const toNumber = (v, fallback = 0) => {
@@ -74,19 +74,28 @@ const computeDerivedFields = (courseObj) => {
     return courseObj;
 };
 
-// create image url from stored value
-const makeImageAbsolute = (rawImage, req) => {
-    if (!rawImage) return "";
-    const image = String(rawImage || "");
-    if (image.startsWith("http://") || image.startsWith("https://")) return image;
-    if (image.startsWith("/")) {
-        return `${req.protocol}://${req.get("host")}${image}`;
+// Upload a buffer to Cloudinary and return the secure URL + public_id
+const uploadToCloudinary = (buffer, folder = "skills-platform/courses") => {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            { folder, resource_type: "image" },
+            (error, result) => {
+                if (error) return reject(error);
+                resolve({ url: result.secure_url, publicId: result.public_id });
+            }
+        );
+        streamifier.createReadStream(buffer).pipe(stream);
+    });
+};
+
+// Delete an image from Cloudinary by its public_id
+const deleteFromCloudinary = async (publicId) => {
+    if (!publicId) return;
+    try {
+        await cloudinary.uploader.destroy(publicId);
+    } catch (e) {
+        console.warn("Cloudinary delete failed:", e.message);
     }
-    // if file stored as "uploads/filename" or just "filename"
-    if (image.startsWith("uploads/")) {
-        return `${req.protocol}://${req.get("host")}/${image}`;
-    }
-    return `${req.protocol}://${req.get("host")}/uploads/${image}`;
 };
 
 // to get public courses
@@ -116,16 +125,9 @@ export const getPublicCourses = async (req, res) => {
 
         const courses = await q.lean();
 
-        const mapped = courses.map((c) => {
-            const imageURL = makeImageAbsolute(c.image || "", req);
-            return {
-                ...c,
-                image: imageURL
-            }
-        });
         return res.json({
             success: true,
-            items: mapped
+            items: courses
         });
     }
 
@@ -142,13 +144,9 @@ export const getPublicCourses = async (req, res) => {
 export const getCourses = async (req, res) => {
     try {
         const courses = await Course.find().sort({ createdAt: -1 }).lean();
-        const mapped = courses.map((c) => ({
-            ...c,
-            image: makeImageAbsolute(c.image || "", req)
-        }));
         return res.json({
             success: true,
-            courses: mapped
+            courses
         });
     }
     catch (err) {
@@ -169,7 +167,6 @@ export const getCourseById = async (req, res) => {
             error: 'Not found'
         });
 
-        course.image = makeImageAbsolute(course.image || "", req);
         return res.json({
             success: true,
             course
@@ -189,8 +186,14 @@ export const createCourse = async (req, res) => {
     try {
         const body = req.body || {};
 
-        // image handling: store relative path so static serving works consistently
-        const imagePath = req.file ? `/uploads/${req.file.filename}` : (body.image || "");
+        // image handling: upload to Cloudinary and store the secure URL + public_id
+        let imagePath = body.image || "";
+        let imagePublicId = "";
+        if (req.file) {
+            const uploaded = await uploadToCloudinary(req.file.buffer);
+            imagePath = uploaded.url;
+            imagePublicId = uploaded.publicId;
+        }
 
         // parse price
         const priceParsed = parseJSONSafe(body.price) ?? (body.price || {});
@@ -246,6 +249,7 @@ export const createCourse = async (req, res) => {
             courseType: body.courseType || "regular",
             category: body.category || null,
             createdBy: body.createdBy || null,
+            imagePublicId,
         };
 
         computeDerivedFields(courseObj);
@@ -253,7 +257,6 @@ export const createCourse = async (req, res) => {
         await course.save();
 
         const returned = course.toObject();
-        returned.image = makeImageAbsolute(returned.image || "", req);
         return res.status(201).json({
             success: true,
             course: returned
@@ -278,17 +281,8 @@ export const deleteCourse = async (req, res) => {
             error: 'Not found'
         });
 
-        // remove upload file from the local uploads folder
-        try {
-            if (course.image && !course.image.startsWith('http')) {
-                const filePath = path.join(process.cwd(), course.image.startsWith("/") ? course.image.slice(1) : course.image);
-
-                if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-            }
-        }
-        catch (e) {
-            //ignore any errors
-        }
+        // delete image from Cloudinary
+        await deleteFromCloudinary(course.imagePublicId);
 
         await course.deleteOne();
         return res.json({

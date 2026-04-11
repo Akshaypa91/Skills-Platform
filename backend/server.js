@@ -27,8 +27,6 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(clerkMiddleware());
 
-app.use('/uploads', express.static('uploads'));
-
 // DB
 connectDB();
 

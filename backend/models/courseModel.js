@@ -33,6 +33,7 @@ const courseSchema = new mongoose.Schema(
         name: { type: String, required: true },
         teacher: { type: String, required: true },
         image: { type: String },
+        imagePublicId: { type: String, default: "" },
         ratings: [
             {
                 userId: { type: String, required: true },
