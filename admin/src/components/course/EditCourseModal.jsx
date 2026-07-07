@@ -143,7 +143,7 @@ const EditCourseModal = ({ course, saving, error, onSave, onClose }) => {
     <Modal
       title={`Edit ${course?.title || "Course"}`}
       onClose={requestClose}
-      maxWidth="1040px"
+      maxWidth="900px"
     >
       <form className="edit-course-form" onSubmit={handleSubmit}>
         {error && <div className="form-error">{error}</div>}
