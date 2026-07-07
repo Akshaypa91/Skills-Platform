@@ -1,12 +1,12 @@
 import React from "react";
 import Navbar from "../components/Navbar";
-import ListPage from "../components/ListPage";
+import ListCourse from "../components/course/ListCourse";
 
 const List = () => {
   return (
     <div>
         <Navbar />
-        <ListPage />
+        <ListCourse />
     </div>
   )
 }

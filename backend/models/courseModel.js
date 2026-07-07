@@ -57,6 +57,8 @@ const courseSchema = new mongoose.Schema(
         },
         totalLectures: { type: Number, default: 0 },
         lectures: [lectureSchema],
+        category: { type: String, default: "" },
+        status: { type: String, enum: ["published", "draft"], default: "draft" },
         courseType: { type: String, enum: ["regular", "top"], default: "regular" },
     },
     { timestamps: true }

@@ -32,6 +32,7 @@ connectDB();
 
 // Routes
 app.use('/api/course', courseRouter);
+app.use('/api/courses', courseRouter);
 app.use('/api/booking', bookingRouter);
 
 app.get('/', (req, res) => {

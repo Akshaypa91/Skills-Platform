@@ -158,6 +158,104 @@ export const getCourses = async (req, res) => {
     }
 }
 
+const buildCourseUpdate = (body = {}) => {
+    const update = {};
+
+    if (body.title !== undefined || body.name !== undefined) {
+        update.name = body.title ?? body.name;
+    }
+    if (body.instructor !== undefined || body.teacher !== undefined) {
+        update.teacher = body.instructor ?? body.teacher;
+    }
+    if (body.description !== undefined || body.overview !== undefined) {
+        update.overview = body.description ?? body.overview;
+    }
+    if (body.thumbnail !== undefined || body.image !== undefined) {
+        update.image = body.thumbnail ?? body.image;
+    }
+    if (body.category !== undefined) {
+        update.category = body.category;
+    }
+    if (body.status !== undefined) {
+        update.status = body.status === "published" ? "published" : "draft";
+    }
+    if (body.pricingType !== undefined) {
+        update.pricingType = body.pricingType;
+    }
+    if (body.price !== undefined) {
+        const numericPrice =
+            typeof body.price === "object" && body.price !== null
+                ? toNumber(body.price.sale ?? body.price.original)
+                : toNumber(body.price);
+
+        update.price = {
+            original: numericPrice,
+            sale: numericPrice,
+        };
+        update.pricingType = numericPrice > 0 ? "paid" : "free";
+    }
+
+    return update;
+};
+
+export const updateCourse = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const update = buildCourseUpdate(req.body);
+
+        const course = await Course.findByIdAndUpdate(id, update, {
+            new: true,
+            runValidators: true,
+        }).lean();
+
+        if (!course) return res.status(404).json({
+            success: false,
+            error: 'Not found'
+        });
+
+        return res.json({
+            success: true,
+            course
+        });
+    }
+    catch (err) {
+        console.log('updateCourse error', err);
+        return res.status(500).json({
+            success: false,
+            error: 'Server Error'
+        });
+    }
+}
+
+export const updateCourseStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const status = req.body?.status === "published" ? "published" : "draft";
+
+        const course = await Course.findByIdAndUpdate(id, { status }, {
+            new: true,
+            runValidators: true,
+        }).lean();
+
+        if (!course) return res.status(404).json({
+            success: false,
+            error: 'Not found'
+        });
+
+        return res.json({
+            success: true,
+            course
+        });
+    }
+    catch (err) {
+        console.log('updateCourseStatus error', err);
+        return res.status(500).json({
+            success: false,
+            error: 'Server Error'
+        });
+    }
+}
+
 export const getCourseById = async (req, res) => {
     try {
         const { id } = req.params;
@@ -247,7 +345,8 @@ export const createCourse = async (req, res) => {
             totalLectures: toNumber(body.totalLectures, lectures.length),
             lectures,
             courseType: body.courseType || "regular",
-            category: body.category || null,
+            category: body.category || "",
+            status: body.status === "published" ? "published" : "draft",
             createdBy: body.createdBy || null,
             imagePublicId,
         };
