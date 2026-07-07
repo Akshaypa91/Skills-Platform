@@ -289,11 +289,11 @@
 }
 
 .course-modal {
-  width: min(100%, 720px);
+  width: min(100%, 1040px);
   max-height: min(88vh, 820px);
   overflow: auto;
-  border-radius: 8px;
-  background: #fff;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #f8fbff 0%, #eef7ff 100%);
   box-shadow: 0 24px 80px rgba(15, 23, 42, 0.3);
 }
 
@@ -307,7 +307,8 @@
   gap: 16px;
   padding: 20px 24px;
   border-bottom: 1px solid #edf0f5;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(16px);
 }
 
 .course-modal__header h2 {
@@ -374,6 +375,276 @@
   padding-top: 8px;
 }
 
+.edit-course-form {
+  display: grid;
+  gap: 26px;
+  padding: 28px;
+  color: #27364a;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.edit-card {
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 28px;
+  box-shadow: 0 24px 55px rgba(59, 130, 246, 0.12);
+}
+
+.edit-card__header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.edit-card__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  color: #fff;
+  background: linear-gradient(135deg, #67d8ff 0%, #0497dc 100%);
+  box-shadow: 0 12px 24px rgba(2, 132, 199, 0.24);
+}
+
+.edit-card__header h3 {
+  margin: 0;
+  font-size: clamp(1.45rem, 3vw, 2rem);
+  font-weight: 900;
+  letter-spacing: 0;
+  color: #1f2937;
+}
+
+.edit-card__header p {
+  margin: 4px 0 0;
+  color: #596579;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.edit-type-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+}
+
+.edit-type-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 72px;
+  border: 2px solid #e1e5ec;
+  border-radius: 999px;
+  background: #fff;
+  color: #1f2937;
+  padding: 0 22px;
+  font: inherit;
+  font-size: 1.25rem;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.08);
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.edit-type-option.is-selected {
+  border-color: #2f86ff;
+  background: #eff6ff;
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.22);
+}
+
+.radio-dot {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #99a3b3;
+  border-radius: 999px;
+  background: #fff;
+}
+
+.edit-type-option.is-selected .radio-dot {
+  border: 6px solid #2f86ff;
+}
+
+.edit-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 28px;
+}
+
+.edit-field {
+  display: grid;
+  gap: 10px;
+  color: #29384d;
+  font-size: 1.08rem;
+  font-weight: 900;
+}
+
+.edit-field--full {
+  margin-top: 24px;
+}
+
+.edit-field > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.edit-field svg {
+  color: #2f86ff;
+}
+
+.edit-field input,
+.edit-field select,
+.edit-field textarea {
+  width: 100%;
+  border: 2px solid #e1e5ec;
+  border-radius: 999px;
+  background: #fff;
+  color: #27364a;
+  font: inherit;
+  font-size: 1rem;
+  outline: none;
+  box-shadow: 0 3px 7px rgba(15, 23, 42, 0.1);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.edit-field input,
+.edit-field select {
+  min-height: 58px;
+  padding: 0 20px;
+}
+
+.edit-field textarea {
+  min-height: 150px;
+  border-radius: 18px;
+  padding: 18px 20px;
+  resize: vertical;
+}
+
+.edit-field input::placeholder,
+.edit-field textarea::placeholder {
+  color: #9aa4b5;
+}
+
+.edit-field input:focus,
+.edit-field select:focus,
+.edit-field textarea:focus {
+  border-color: #2f86ff;
+  box-shadow: 0 0 0 3px rgba(47, 134, 255, 0.16), 0 3px 7px rgba(15, 23, 42, 0.1);
+}
+
+.edit-rating-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 58px;
+  border: 2px solid #e1e5ec;
+  border-radius: 999px;
+  background: #fff;
+  padding: 0 18px;
+  box-shadow: 0 3px 7px rgba(15, 23, 42, 0.1);
+}
+
+.edit-rating-box button {
+  border: 0;
+  background: transparent;
+  padding: 2px;
+  color: #cfd6df;
+  cursor: pointer;
+}
+
+.edit-rating-box svg.is-filled {
+  color: #facc15;
+  fill: currentColor;
+}
+
+.edit-duration-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.edit-duration-grid label {
+  display: grid;
+  gap: 7px;
+}
+
+.edit-duration-grid small {
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.edit-upload-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 70px;
+  border: 2px dashed #aab6c7;
+  border-radius: 14px;
+  background: #fff;
+  padding: 12px 18px;
+  box-shadow: 0 3px 7px rgba(15, 23, 42, 0.08);
+}
+
+.edit-upload-box input {
+  min-height: 42px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+}
+
+.edit-upload-box:focus-within {
+  border-color: #2f86ff;
+}
+
+.edit-image-preview {
+  width: 156px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 3px solid #fff;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.14);
+}
+
+.edit-field-error {
+  color: #be123c;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.edit-course-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding-bottom: 4px;
+}
+
+.edit-save-button {
+  min-width: 280px;
+  min-height: 62px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #67d8ff 0%, #0497dc 100%);
+  color: #fff;
+  font: inherit;
+  font-size: 1.2rem;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 18px 32px rgba(2, 132, 199, 0.26);
+}
+
+.edit-save-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.68;
+}
+
 @media (max-width: 760px) {
   .list-course-page {
     padding: 96px 14px 32px;
@@ -393,6 +664,37 @@
 
   .form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .edit-course-form {
+    padding: 16px;
+  }
+
+  .edit-card {
+    padding: 20px;
+    border-radius: 20px;
+  }
+
+  .edit-type-grid,
+  .edit-form-grid,
+  .edit-duration-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .edit-type-option {
+    min-height: 62px;
+    font-size: 1.05rem;
+  }
+
+  .edit-course-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .edit-save-button {
+    width: 100%;
+    min-width: 0;
   }
 
   .course-form__actions {

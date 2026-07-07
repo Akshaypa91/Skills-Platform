@@ -85,11 +85,16 @@ export const normalizeCourse = (course) => ({
   priceValue: getCoursePrice(course),
   thumbnail: getCourseThumbnail(course),
   status: getCourseStatus(course),
+  pricingType: course?.pricingType || (getCoursePrice(course) > 0 ? "paid" : "free"),
+  courseType: course?.courseType || "regular",
+  rating: Number(course?.rating ?? course?.avgRating ?? 0) || 0,
+  totalDuration: course?.totalDuration || { hours: 0, minutes: 0 },
+  totalLectures: course?.totalLectures || course?.lectures?.length || 0,
   lastUpdated: course?.updatedAt || course?.createdAt || null,
 });
 
 export const serializeCoursePayload = (formData) => {
-  const price = Number(formData.price);
+  const price = formData.pricingType === "free" ? 0 : Number(formData.price);
 
   return {
     title: formData.title.trim(),
@@ -98,12 +103,19 @@ export const serializeCoursePayload = (formData) => {
     overview: formData.description.trim(),
     category: formData.category.trim(),
     price,
-    pricingType: price > 0 ? "paid" : "free",
+    pricingType: formData.pricingType || (price > 0 ? "paid" : "free"),
     thumbnail: formData.thumbnail.trim(),
     image: formData.thumbnail.trim(),
     instructor: formData.instructor.trim(),
     teacher: formData.instructor.trim(),
     status: formData.status,
+    courseType: formData.courseType,
+    rating: Number(formData.rating) || 0,
+    totalDuration: {
+      hours: Number(formData.durationHours) || 0,
+      minutes: Number(formData.durationMinutes) || 0,
+    },
+    totalLectures: Number(formData.totalLectures) || 0,
   };
 };
 

@@ -182,6 +182,22 @@ const buildCourseUpdate = (body = {}) => {
     if (body.pricingType !== undefined) {
         update.pricingType = body.pricingType;
     }
+    if (body.courseType !== undefined) {
+        update.courseType = body.courseType === "top" ? "top" : "regular";
+    }
+    if (body.totalDuration !== undefined) {
+        const duration = parseJSONSafe(body.totalDuration) ?? body.totalDuration ?? {};
+        update.totalDuration = {
+            hours: toNumber(duration.hours),
+            minutes: toNumber(duration.minutes),
+        };
+    }
+    if (body.totalLectures !== undefined) {
+        update.totalLectures = toNumber(body.totalLectures);
+    }
+    if (body.rating !== undefined) {
+        update.avgRating = toNumber(body.rating);
+    }
     if (body.price !== undefined) {
         const numericPrice =
             typeof body.price === "object" && body.price !== null
