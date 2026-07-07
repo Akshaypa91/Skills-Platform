@@ -53,7 +53,8 @@ const HomeCourses = () => {
         )
             .then((json) => {
                 if (!mounted) return;
-                const items = (json && (json.items || json.courses || [])) || [];
+                const items = ((json && (json.items || json.courses || [])) || [])
+                    .filter((course) => (course.status || "published") === "published");
                 const mapped = items.map((c) => ({
                     id: c._id || c.id,
                     name: c.name,

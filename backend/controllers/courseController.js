@@ -102,7 +102,12 @@ const deleteFromCloudinary = async (publicId) => {
 export const getPublicCourses = async (req, res) => {
     try {
         const { home, type = 'all', limit } = req.query;
-        let filter = {};
+        let filter = {
+            $or: [
+                { status: "published" },
+                { status: { $exists: false } },
+            ],
+        };
 
         if (home === 'true') {
             filter.courseType = 'top';

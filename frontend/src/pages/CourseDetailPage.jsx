@@ -184,6 +184,9 @@ const CourseDetailPage = () => {
         if (!json || !json.success) {
           throw new Error((json && json.message) || "Failed to load course");
         }
+        if (json.course?.status === "draft") {
+          throw new Error("This course is not published yet.");
+        }
         const normalized = normalizeCourse(json.course);
         setCourse(normalized);
 

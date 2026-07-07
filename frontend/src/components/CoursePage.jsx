@@ -127,9 +127,11 @@ const CoursePage = () => {
                 if (!mounted) return;
                 const raw = json.items || json.courses || [];
                 // filter non-top (existing behavior)
-                const regular = raw.filter((c) =>
-                    c.courseType ? c.courseType !== "top" : true
-                );
+                const regular = raw.filter((c) => {
+                    const isPublished = (c.status || "published") === "published";
+                    const isRegular = c.courseType ? c.courseType !== "top" : true;
+                    return isPublished && isRegular;
+                });
 
                 const mapped = regular.map((c) => ({
                     id: String(c._id || c.id || ""),
