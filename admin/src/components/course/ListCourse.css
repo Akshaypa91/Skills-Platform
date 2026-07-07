@@ -590,12 +590,28 @@
   box-shadow: 0 3px 7px rgba(15, 23, 42, 0.08);
 }
 
+.edit-upload-box--file {
+  justify-content: center;
+  color: #2f86ff;
+  cursor: pointer;
+}
+
 .edit-upload-box input {
   min-height: 42px;
   border: 0;
   border-radius: 0;
   box-shadow: none;
   padding: 0;
+}
+
+.edit-upload-box--file input {
+  display: none;
+}
+
+.edit-upload-box--file span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .edit-upload-box:focus-within {

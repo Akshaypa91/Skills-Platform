@@ -22,12 +22,17 @@ const requestCourseApi = async (pathBuilder, options = {}) => {
 
   for (const basePath of COURSE_PATHS) {
     try {
+      const isFormData = options.body instanceof FormData;
+      const headers = isFormData
+        ? options.headers || {}
+        : {
+            "Content-Type": "application/json",
+            ...(options.headers || {}),
+          };
+
       const response = await fetch(`${API_BASE_URL}${pathBuilder(basePath)}`, {
-        headers: {
-          "Content-Type": "application/json",
-          ...(options.headers || {}),
-        },
         ...options,
+        headers,
       });
 
       if ((response.status === 404 || response.status === 405) && basePath !== COURSE_PATHS.at(-1)) {
@@ -104,8 +109,8 @@ export const serializeCoursePayload = (formData) => {
     category: formData.category.trim(),
     price,
     pricingType: formData.pricingType || (price > 0 ? "paid" : "free"),
-    thumbnail: formData.thumbnail.trim(),
-    image: formData.thumbnail.trim(),
+    thumbnail: formData.thumbnail?.trim() || "",
+    image: formData.thumbnail?.trim() || "",
     instructor: formData.instructor.trim(),
     teacher: formData.instructor.trim(),
     status: formData.status,
@@ -119,6 +124,25 @@ export const serializeCoursePayload = (formData) => {
   };
 };
 
+export const serializeCourseFormData = (formData) => {
+  const payload = serializeCoursePayload(formData);
+  const multipart = new FormData();
+
+  Object.entries(payload).forEach(([key, value]) => {
+    if (value && typeof value === "object") {
+      multipart.append(key, JSON.stringify(value));
+    } else {
+      multipart.append(key, String(value ?? ""));
+    }
+  });
+
+  if (formData.imageFile) {
+    multipart.append("image", formData.imageFile);
+  }
+
+  return multipart;
+};
+
 export const fetchCourses = async () => {
   const data = await requestCourseApi((basePath) => basePath);
   const rawCourses = data?.courses || data?.items || data?.data || data || [];
@@ -128,7 +152,7 @@ export const fetchCourses = async () => {
 export const updateCourse = async (courseId, updates) => {
   const data = await requestCourseApi((basePath) => `${basePath}/${courseId}`, {
     method: "PUT",
-    body: JSON.stringify(serializeCoursePayload(updates)),
+    body: serializeCourseFormData(updates),
   });
 
   return normalizeCourse(data?.course || data?.data || data);

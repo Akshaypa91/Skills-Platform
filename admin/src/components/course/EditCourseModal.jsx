@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   BadgeIndianRupee,
   BookOpenText,
@@ -20,6 +20,8 @@ const buildInitialForm = (course) => ({
   category: course?.category || "",
   price: String(course?.priceValue ?? ""),
   thumbnail: course?.thumbnail || "",
+  imageFile: null,
+  imagePreview: course?.thumbnail || "",
   instructor: course?.instructor || "",
   status: course?.status || "draft",
   courseType: course?.courseType || "regular",
@@ -68,6 +70,14 @@ const EditCourseModal = ({ course, saving, error, onSave, onClose }) => {
 
   const isDirty = JSON.stringify(formData) !== JSON.stringify(initialForm);
 
+  useEffect(() => {
+    return () => {
+      if (formData.imagePreview?.startsWith("blob:")) {
+        URL.revokeObjectURL(formData.imagePreview);
+      }
+    };
+  }, [formData.imagePreview]);
+
   const requestClose = () => {
     if (isDirty && !window.confirm("Discard unsaved changes?")) return;
     onClose();
@@ -77,6 +87,35 @@ const EditCourseModal = ({ course, saving, error, onSave, onClose }) => {
     const { name, value } = event.target;
     setFormData((current) => ({ ...current, [name]: value }));
     setFieldErrors((current) => ({ ...current, [name]: "" }));
+  };
+
+  const handleImageUpload = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setFieldErrors((current) => ({
+        ...current,
+        image: "Please choose a valid image file.",
+      }));
+      return;
+    }
+
+    const preview = URL.createObjectURL(file);
+
+    setFormData((current) => {
+      if (current.imagePreview?.startsWith("blob:")) {
+        URL.revokeObjectURL(current.imagePreview);
+      }
+
+      return {
+        ...current,
+        imageFile: file,
+        imagePreview: preview,
+        thumbnail: "",
+      };
+    });
+    setFieldErrors((current) => ({ ...current, image: "" }));
   };
 
   const setCourseType = (courseType) => {
@@ -322,21 +361,26 @@ const EditCourseModal = ({ course, saving, error, onSave, onClose }) => {
           <label className="edit-field edit-field--full">
             <span>
               <ImageIcon size={18} />
-              Course Image URL
+              Course Image
             </span>
-            <div className="edit-upload-box">
+            <label className="edit-upload-box edit-upload-box--file">
               <Upload size={20} />
               <input
-                name="thumbnail"
-                type="url"
-                value={formData.thumbnail}
-                onChange={handleChange}
-                placeholder="Paste course image URL"
+                name="image"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
               />
-            </div>
-            {formData.thumbnail && (
+              <span>
+                {formData.imageFile
+                  ? formData.imageFile.name
+                  : "Upload Course Image"}
+              </span>
+            </label>
+            <FieldError>{fieldErrors.image}</FieldError>
+            {formData.imagePreview && (
               <img
-                src={formData.thumbnail}
+                src={formData.imagePreview}
                 alt="Course preview"
                 className="edit-image-preview"
               />

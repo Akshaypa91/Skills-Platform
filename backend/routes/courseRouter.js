@@ -13,7 +13,7 @@ courseRouter.get('/', getCourses);
 courseRouter.get('/:id', getCourseById);
 
 courseRouter.post('/', upload.single('image'), createCourse);
-courseRouter.put('/:id', updateCourse);
+courseRouter.put('/:id', upload.single('image'), updateCourse);
 courseRouter.patch('/:id/status', updateCourseStatus);
 courseRouter.delete('/:id', deleteCourse);
 

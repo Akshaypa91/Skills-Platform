@@ -219,6 +219,22 @@ export const updateCourse = async (req, res) => {
         const { id } = req.params;
         const update = buildCourseUpdate(req.body);
 
+        if (req.file) {
+            const existing = await Course.findById(id);
+            if (!existing) return res.status(404).json({
+                success: false,
+                error: 'Not found'
+            });
+
+            const uploaded = await uploadToCloudinary(req.file.buffer);
+            update.image = uploaded.url;
+            update.imagePublicId = uploaded.publicId;
+
+            if (existing.imagePublicId) {
+                await deleteFromCloudinary(existing.imagePublicId);
+            }
+        }
+
         const course = await Course.findByIdAndUpdate(id, update, {
             new: true,
             runValidators: true,
