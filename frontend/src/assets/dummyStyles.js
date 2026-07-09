@@ -849,13 +849,13 @@ export const homeCoursesStyles = {
   coursesGrid: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-10",
   
   // Course Card
-  courseCard: "cursor-pointer group",
-  imageContainer: "relative rounded-2xl xl:rounded-2xl overflow-hidden",
-  courseImage: "w-full object-cover transition-transform duration-300 group-hover:shadow-[0_8px_32px_0_rgba(99,102,241,0.18)] h-48 lg:w- sm:h-48 md:h-40 lg:h-48",
-  
+  courseCard: "cursor-pointer group flex flex-col bg-white rounded-2xl overflow-hidden border border-indigo-100 shadow-[0_4px_16px_rgba(99,102,241,0.10)] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_18px_44px_rgba(99,102,241,0.28)]",
+  imageContainer: "relative overflow-hidden",
+  courseImage: "block w-full object-cover h-48 sm:h-48 md:h-40 lg:h-48 transition-transform duration-500 group-hover:scale-110",
+
   // Course Info
-  courseInfo: "mt-4 px-3 bg-white/70 backdrop-blur-md rounded-xl -translate-y-3 sm:-translate-y-5 shadow-lg space-y-2 py-3",
-  courseName: "text-base sm:text-lg text-indigo-600 flex items-center truncate",
+  courseInfo: "flex flex-col flex-1 px-4 pt-3 pb-4 space-y-1.5",
+  courseName: "text-base sm:text-lg text-indigo-600 flex items-center truncate transition-colors duration-300 group-hover:text-pink-500",
   teacherInfo: "flex items-center text-gray-500 text-sm",
   teacherIcon: "mr-1 text-pink-400",
   teacherName: "italic text-purple-600 truncate",
@@ -870,7 +870,7 @@ export const homeCoursesStyles = {
   starIcon: "size-4",
   
   // Pricing Section
-  pricingContainer: "flex items-center mt-2 space-x-2",
+  pricingContainer: "flex items-center mt-auto pt-2 space-x-2",
   freePrice: "text-lg sm:text-xl font-bold text-green-700 drop-shadow",
   salePrice: "text-lg sm:text-xl font-bold text-green-700 drop-shadow",
   originalPrice: "line-through text-green-600 font-medium",

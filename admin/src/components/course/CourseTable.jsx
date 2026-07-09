@@ -32,7 +32,6 @@ const CourseTable = ({
       <thead>
         <tr>
           <th>Title</th>
-          <th>Category</th>
           <th>Instructor</th>
           <th>Price</th>
           <th>Status</th>
@@ -59,7 +58,6 @@ const CourseTable = ({
                   <span>{course.title}</span>
                 </div>
               </td>
-              <td>{course.category || "Uncategorized"}</td>
               <td>{course.instructor || "Unassigned"}</td>
               <td>{formatCurrency(course.priceValue)}</td>
               <td>

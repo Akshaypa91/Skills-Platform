@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   BadgeIndianRupee,
   BookOpenText,
@@ -21,7 +21,6 @@ const buildInitialForm = (course) => ({
   price: String(course?.priceValue ?? ""),
   thumbnail: course?.thumbnail || "",
   imageFile: null,
-  imagePreview: course?.thumbnail || "",
   instructor: course?.instructor || "",
   status: course?.status || "draft",
   courseType: course?.courseType || "regular",
@@ -70,14 +69,6 @@ const EditCourseModal = ({ course, saving, error, onSave, onClose }) => {
 
   const isDirty = JSON.stringify(formData) !== JSON.stringify(initialForm);
 
-  useEffect(() => {
-    return () => {
-      if (formData.imagePreview?.startsWith("blob:")) {
-        URL.revokeObjectURL(formData.imagePreview);
-      }
-    };
-  }, [formData.imagePreview]);
-
   const requestClose = () => {
     if (isDirty && !window.confirm("Discard unsaved changes?")) return;
     onClose();
@@ -101,20 +92,11 @@ const EditCourseModal = ({ course, saving, error, onSave, onClose }) => {
       return;
     }
 
-    const preview = URL.createObjectURL(file);
-
-    setFormData((current) => {
-      if (current.imagePreview?.startsWith("blob:")) {
-        URL.revokeObjectURL(current.imagePreview);
-      }
-
-      return {
-        ...current,
-        imageFile: file,
-        imagePreview: preview,
-        thumbnail: "",
-      };
-    });
+    setFormData((current) => ({
+      ...current,
+      imageFile: file,
+      thumbnail: "",
+    }));
     setFieldErrors((current) => ({ ...current, image: "" }));
   };
 
@@ -378,13 +360,6 @@ const EditCourseModal = ({ course, saving, error, onSave, onClose }) => {
               </span>
             </label>
             <FieldError>{fieldErrors.image}</FieldError>
-            {formData.imagePreview && (
-              <img
-                src={formData.imagePreview}
-                alt="Course preview"
-                className="edit-image-preview"
-              />
-            )}
           </label>
 
           <label className="edit-field edit-field--full">
